@@ -6,21 +6,24 @@
 <!-- Define inlined PaperScript associate it with myCanvas -->
 <script type="text/paperscript" canvas="myCanvas">
 	var TGStrokeColor = '#bde4f6';
-    var TGStrokeWidth = 17;
+    var TGStrokeWidth = 10;
 
     var circleSrcCenter = new Point(300,300);
-    var circleSrc = new Path.Circle(circleSrcCenter, 75);
+    var circleDestCenter = new Point(700,400);
+    
+    var connectingLine = new Path.Line(circleSrcCenter, circleDestCenter);  
+    connectingLine.strokeColor = 'pink';
+    connectingLine.strokeWidth = 90;        
+    
+    var circleSrc = new Path.Circle(circleSrcCenter, 40);
     circleSrc.strokeColor = TGStrokeColor;
     circleSrc.strokeWidth = TGStrokeWidth;  
     
-    var circleDestCenter = new Point(700,400);
-    var circleDest = new Path.Circle(circleDestCenter, 75);
+    var circleDest = new Path.Circle(circleDestCenter, 40);
     circleDest.strokeColor = TGStrokeColor;
     circleDest.strokeWidth = TGStrokeWidth;     
 
-    var connectingLine = new Path.Line(circleSrcCenter, circleDestCenter);  
-    connectingLine.strokeColor = TGStrokeColor;
-    connectingLine.strokeWidth = 109;    
+
 
     
     function onFrame(event) {
