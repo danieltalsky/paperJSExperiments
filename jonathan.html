@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="js/paper-full.min.js"></script>
+<!-- Define inlined PaperScript associate it with myCanvas -->
+<script type="text/paperscript" canvas="myCanvas">
+var TGFillColor = '#bde4f6';
+var TGStrokeWidth = 17;
+var circRadius = 75;
+
+var circleSrcCenter = new Point(300,300);
+var circleSrc = new Path.Circle(circleSrcCenter, circRadius);
+
+var circleSrcHole = new Path.Circle(circleSrcCenter, circRadius-TGStrokeWidth);
+
+var circleDestCenter = new Point(600,300);
+var circleDest = new Path.Circle(circleDestCenter, circRadius);
+
+var circleDestHole = new Path.Circle(circleDestCenter, circRadius-TGStrokeWidth);
+
+var fromPt = circleSrcCenter + new Point(0,circRadius);
+var toPt = circleDestCenter - new Point(0,circRadius);
+var connectingRect = new Path.Rectangle(fromPt, toPt);
+
+var connector = new CompoundPath(
+  {
+  children: 
+      [ circleSrc.unite(circleDest.unite(connectingRect))
+      , circleSrcHole
+      , circleDestHole
+      ]
+  , fillColor: TGFillColor
+  }
+);
+
+function onFrame(event) {
+        connector.rotate(1);
+}
+    
+    
+</script>
+</head>
+<body>
+	<canvas id="myCanvas" resize></canvas>
+    <img id="circlethumbnail" src="img/circlethumbnail.png" style="display:none;" />
+</body>
+
+
+</html>

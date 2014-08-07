@@ -5,8 +5,8 @@
 <script type="text/javascript" src="js/paper-full.min.js"></script>
 <!-- Define inlined PaperScript associate it with myCanvas -->
 <script type="text/paperscript" canvas="myCanvas">
-	var TGStrokeColor = '#0058F2';
-    var TGOpacity = 0.3;
+	var TGStrokeColor = '#98c8eb';
+    var TGOpacity = 0.5;
     var TGStrokeWidth = 10;
 
     /*
@@ -104,7 +104,7 @@
     console.log(new Point(labelBox.bounds) + 30);
     
     var labelGroup = new Group([labelLine, labelBox, artistLabel, mediumLabel, locationLabel]);
-    labelGroup.visible = true;
+    labelGroup.visible = false;
     
     rolloverNodeGroup.onMouseEnter = function(event) {
         labelGroup.visible = true;
