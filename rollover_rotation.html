@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="js/paper-full.min.js"></script>
+<!-- Define inlined PaperScript associate it with myCanvas -->
+<script type="text/paperscript" canvas="myCanvas">
+	var TGStrokeColor = '#98c8eb';
+    var TGOpacity = 0.5;
+    var TGStrokeWidth = 10;
+
+    /*
+        Rotating rounded rectangle group
+    */
+    var circleSrcCenter = new Point(300,300);
+    var circleDestCenter = new Point(700,400);
+    var connectingLine = new Path.Line({
+        from: circleSrcCenter, 
+        to: circleDestCenter,
+        strokeColor: TGStrokeColor,
+        strokeWidth: 90,
+        opacity: TGOpacity
+    });    
+    var circleSrc = new Path.Circle({
+        center: circleSrcCenter,
+        radius: 40,
+        strokeColor: TGStrokeColor,
+        strokeWidth: TGStrokeWidth,
+        opacity: TGOpacity
+    });
+    var circleDest = new Path.Circle({
+        center: circleDestCenter,
+        radius: 40,
+        strokeColor: TGStrokeColor,
+        strokeWidth: TGStrokeWidth,
+        opacity: TGOpacity
+    });
+    var rotateGroup = new Group([connectingLine, circleSrc, circleDest]);
+
+
+    
+    
+    /*
+        Rollover circle node test
+    */
+    var rolloverNodeCenter = new Point(100,100);
+    var rolloverNode = new Path.Circle({
+        center: rolloverNodeCenter,
+        radius: 40,
+        strokeColor: TGStrokeColor,
+        fillColor: 'blue',
+        strokeWidth: TGStrokeWidth,
+        opacity: TGOpacity
+    });    
+    var circleThumbnail = new Raster(
+        'circlethumbnail', rolloverNodeCenter);
+    circleThumbnail.scale(0.75);
+    var rolloverNodeGroup = new Group([rolloverNode, circleThumbnail]);    
+    
+    
+    /*
+        Popup Label
+    */
+    var artistName   = 'Tom Patterson';
+    var mediumName   = 'Photography';
+    var locationName = 'Portland, OR, USA';
+    var labelLine = new Path.Line({
+        from: rolloverNodeCenter + 31, 
+        to: rolloverNodeCenter + 90,
+        strokeColor: 'red',
+        strokeWidth: 3
+    });          
+    var labelBox = new Path.Rectangle({
+        topLeft: new Point(rolloverNodeCenter + 90),
+        bottomRight: new Point(rolloverNodeCenter + 90 + {x: 300, y: 130}),
+        strokeColor: 'red',
+        fillColor: 'red',
+        strokeWidth: 3
+    });        
+    var artistLabel = new PointText({
+        point: new Point(labelBox.bounds) + [5, 30],
+        content: artistName.toUpperCase(),
+        fillColor: 'white',
+        fontWeight: 'bold',
+        fontFamily: 'Helvetica',
+        fontSize: 33
+    });
+    var mediumLabel = new PointText({
+        point: new Point(labelBox.bounds) + [5, 65],
+        content: mediumName.toUpperCase(),
+        fillColor: 'white',
+        fontWeight: 'bold',
+        fontFamily: 'Helvetica',
+        fontSize: 36
+    });
+    var locationLabel = new PointText({
+        point: new Point(labelBox.bounds) + [5, 120],
+        content: locationName.toUpperCase(),
+        fillColor: 'white',
+        fontWeight: 'bold',
+        fontFamily: 'Helvetica',
+        fontSize: 27
+    });    
+    console.log(new Point(labelBox.bounds) + 30);
+    
+    var labelGroup = new Group([labelLine, labelBox, artistLabel, mediumLabel, locationLabel]);
+    labelGroup.visible = false;
+    
+    rolloverNodeGroup.onMouseEnter = function(event) {
+        labelGroup.visible = true;
+    }
+    
+    rolloverNodeGroup.onMouseLeave = function(event) {
+        labelGroup.visible = false;
+    }    
+    
+    
+    
+    /*
+        onFrame animation
+    */
+    function onFrame(event) {
+            rotateGroup.rotate(0.5);
+            circleThumbnail.rotate(0.5);
+    }    
+    
+    
+</script>
+</head>
+<body>
+	<canvas id="myCanvas" resize></canvas>
+    <img id="circlethumbnail" src="img/circlethumbnail.png" style="display:none;" />
+</body>
+
+
+</html>
