@@ -63,16 +63,32 @@
     */
     var currentCircleIndex = 0;
     var lastTime = 0
+    var currentPosition = view.center;
     function onFrame(event) {
         
         // Only run every third of a second
         if (event.time > lastTime + 0.3) {
-        
+      
+                
+            var pathYo = new Path.Line({
+                from: currentPosition,
+                to: currentPosition + generationRadiusSpacing - 5,
+                strokeColor: 'orange',
+                strokeWidth: 20
+            });
+            var circleYo = new Path.Circle({
+                center: currentPosition + 5,
+                radius: 20,
+                strokeColor: '#cccccc',
+                strokeWidth: 1,
+            });            
+                
             generationCircles[currentCircleIndex].strokeColor = '#cccccc';        
             generationCircles[currentCircleIndex].strokeWidth = 1;  
             
             currentCircleIndex += 1;
-            if (currentCircleIndex == totalGenerations) { currentCircleIndex = 0 };
+            currentPosition += generationRadiusSpacing + 5;
+            if (currentCircleIndex == totalGenerations) { return; };
             
             generationCircles[currentCircleIndex].strokeColor = 'red';  
             generationCircles[currentCircleIndex].strokeWidth = 3;  
