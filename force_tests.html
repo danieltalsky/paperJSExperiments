@@ -10,7 +10,7 @@
     */    
     var nodeTree = {
         id: 1,
-        childNodes: [
+        childNodes: [ 
             {
                 id: 123,
                 childNodes: [
@@ -87,14 +87,14 @@
  	var TGStrokeColor = '#98c8eb';
     var TGOpacity = 0.5;
     var TGStrokeWidth = 3;
-    var depthDistance = 50;
+    var depthDistance = 20;
 
 
     // Central node
     var centerNode = new Path.Circle({
         center: view.center,
         radius: 10,
-        strokeColor: TGStrokeColor,
+        strokeColor: 'red',
         strokeWidth: TGStrokeWidth,
         opacity: TGOpacity
     });    
@@ -120,30 +120,52 @@
     
     function moveNode(node, depth) {
         var vec = centerNode.position - node.position;
-        //node.position += normPos / 500;
-//        var normNormPos = normPos.normalize(depthDistance * (1 + depth));
-        
-//        var ang = node.position.getDirectedAngle(centerNode.position);
-        // var desiredDistance = depthDistance * (1 + depth);
+        //var normVec = vec.normalize(depthDistance * (1 + depth));
+        var normVec = vec.normalize();
         var dist = node.position.getDistance(centerNode.position);
+        var desiredDistance = depthDistance * (1 + depth);
         var forceSc = dist - desiredDistance;
-        node.position.
+        console.log(normVec)
+        node.position += normVec * forceSc/100;
+        /*
+        if (forceSc > 1) {
+            node.position += normVec;
+        } else if (forceSc < 1) {
+            node.position -= normVec;
+        }*/
+    /*
+    function moveNode(node, depth) {
+        var vec = centerNode.position - node.position;
+        //node.position += normPos / 500;
+        //var normVec = normPos.normalize(depthDistance * (1 + depth));
+        var normVec = vec.normalize(depthDistance * (1 + depth));
+//        var ang = node.position.getDirectedAngle(centerNode.position);
+        var desiredDistance = depthDistance * (1 + depth);
+        var dist = node.position.getDistance(centerNode.position);
+        //console.log(Math.floor(dist/100.0 * normVec))
+        var forceSc = dist - desiredDistance;
+        console.log(desiredDistance);
+        force = normVec * forceSc/10000.0;
+        console.log(force);
+        node.position += force;
+        
         
         //node.cousinForce();
-        //node.parentForce();
-    }
+        //node.parentForce();*/
+    } 
     
     var lastTime = 0
     function onFrame(event) {
         // Only run every third of a second
-        //if (event.time > lastTime + 0.3) {
+        //if (event.time > lastTime + 1) {
             for (var i = 0, len = generationsArray.length; i < len; i++) {
+                
                 for (var j = 0, len = generationsArray[i].length; j < len; j++) {
                     
                     moveNode(circleNodes[generationsArray[i][j].id], i);     
                 }
             }
-      
+        
       
         
         //    lastTime = event.time
