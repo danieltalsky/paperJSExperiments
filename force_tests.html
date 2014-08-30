@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="js/paper-full.js"></script>
+<!-- Define inlined PaperScript associate it with myCanvas -->
+<script type="text/paperscript" canvas="myCanvas">
+    /*
+        Simple tree    
+    */    
+    var nodeTree = {
+        id: 1,
+        childNodes: [
+            {
+                id: 123,
+                childNodes: [
+                    {
+                        id: 223,
+                        childNodes: []
+                    },
+                    {
+                        id: 224,
+                        childNodes: []
+                    },
+                    {
+                        id: 225,
+                        childNodes: []
+                    }                     
+                ]
+            },
+            {
+                id: 124,
+                childNodes: [
+                    {
+                        id: 226,
+                        childNodes: []
+                    },
+                    {
+                        id: 227,
+                        childNodes: [
+                            {
+                                id: 333,
+                                childNodes: []
+                            },
+                            {
+                                id: 334,
+                                childNodes: []
+                            }                      
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 125,
+                childNodes: []
+            }
+        ] //end childNodes
+    }
+    
+    /*
+        Walk tree
+    */
+    var generationsArray = [];
+    traverse = function (current, depth) {
+        var children = current.childNodes;
+        
+        // if it doesn't exist but there are children
+        if(typeof generationsArray[depth] == 'undefined' && current.childNodes.length != 0) {
+            generationsArray[depth] = [];
+        }        
+
+        for (var i = 0, len = children.length; i < len; i++) {
+            generationsArray[depth].push(children[i]); 
+            traverse(children[i], depth + 1);
+        }
+    }
+    traverse(nodeTree, 0, generationsArray);    
+    console.log(generationsArray);
+    
+    /************************
+    
+    
+      I like to do drawrings.
+    
+    
+    *************************/
+ 	var TGStrokeColor = '#98c8eb';
+    var TGOpacity = 0.5;
+    var TGStrokeWidth = 3;
+    var depthDistance = 50;
+
+
+    // Central node
+    var centerNode = new Path.Circle({
+        center: view.center,
+        radius: 10,
+        strokeColor: TGStrokeColor,
+        strokeWidth: TGStrokeWidth,
+        opacity: TGOpacity
+    });    
+ 
+    
+    var circleNodes = [];
+    for (var i = 0, len = generationsArray.length; i < len; i++) {
+        for (var j = 0, len = generationsArray[i].length; j < len; j++) {
+
+            var randomX = Math.floor(Math.random() * view.size.width);
+            var randomY = Math.floor(Math.random() * view.size.height);
+        
+            circleNodes[generationsArray[i][j].id] = new Path.Circle({
+                center: [randomX, randomY],
+                radius: 10,
+                strokeColor: TGStrokeColor,
+                strokeWidth: TGStrokeWidth,
+                opacity: TGOpacity
+            });           
+        
+        }
+    }
+    
+    function moveNode(node, depth) {
+        var vec = centerNode.position - node.position;
+        //node.position += normPos / 500;
+//        var normNormPos = normPos.normalize(depthDistance * (1 + depth));
+        
+//        var ang = node.position.getDirectedAngle(centerNode.position);
+        // var desiredDistance = depthDistance * (1 + depth);
+        var dist = node.position.getDistance(centerNode.position);
+        var forceSc = dist - desiredDistance;
+        node.position.
+        
+        //node.cousinForce();
+        //node.parentForce();
+    }
+    
+    var lastTime = 0
+    function onFrame(event) {
+        // Only run every third of a second
+        //if (event.time > lastTime + 0.3) {
+            for (var i = 0, len = generationsArray.length; i < len; i++) {
+                for (var j = 0, len = generationsArray[i].length; j < len; j++) {
+                    
+                    moveNode(circleNodes[generationsArray[i][j].id], i);     
+                }
+            }
+      
+      
+        
+        //    lastTime = event.time
+        //}
+
+    }     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</script>
+</head>
+<body>
+	<canvas id="myCanvas" resize></canvas>
+    <img id="circlethumbnail" src="img/circlethumbnail.png" style="display:none;" />
+</body>
+
+
+</html>
