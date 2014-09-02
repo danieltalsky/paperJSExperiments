@@ -6,11 +6,11 @@
 <!-- Define inlined PaperScript associate it with myCanvas -->
 <script type="text/paperscript" canvas="myCanvas">
     /*
-        Simple tree    
-    */    
+        Simple tree
+    */
     var nodeTree = {
         id: 1,
-        childNodes: [ 
+        childNodes: [
             {
                 id: 123,
                 childNodes: [
@@ -25,7 +25,7 @@
                     {
                         id: 225,
                         childNodes: []
-                    }                     
+                    }
                 ]
             },
             {
@@ -45,7 +45,7 @@
                             {
                                 id: 334,
                                 childNodes: []
-                            }                      
+                            }
                         ]
                     }
                 ]
@@ -56,38 +56,39 @@
             }
         ] //end childNodes
     }
-    
+
     /*
         Walk tree
     */
     var generationsArray = [];
     traverse = function (current, depth) {
         var children = current.childNodes;
-        
+
         // if it doesn't exist but there are children
         if(typeof generationsArray[depth] == 'undefined' && current.childNodes.length != 0) {
             generationsArray[depth] = [];
-        }        
+        }
 
         for (var i = 0, len = children.length; i < len; i++) {
-            generationsArray[depth].push(children[i]); 
+            generationsArray[depth].push(children[i]);
             traverse(children[i], depth + 1);
         }
     }
-    traverse(nodeTree, 0, generationsArray);    
+    traverse(nodeTree, 0, generationsArray);
     console.log(generationsArray);
-    
+
     /************************
-    
-    
+
+
       I like to do drawrings.
-    
-    
+
+
     *************************/
  	var TGStrokeColor = '#98c8eb';
     var TGOpacity = 0.5;
     var TGStrokeWidth = 3;
-    var depthDistance = 20;
+    var depthDistance = 40;
+    var dampness = 0.9; // For dampening, of course.
 
 
     // Central node
@@ -97,118 +98,109 @@
         strokeColor: 'red',
         strokeWidth: TGStrokeWidth,
         opacity: TGOpacity
-    });    
- 
-    
+    });
+
+
     var circleNodes = [];
     for (var i = 0, len = generationsArray.length; i < len; i++) {
         for (var j = 0, len = generationsArray[i].length; j < len; j++) {
 
             var randomX = Math.floor(Math.random() * view.size.width);
             var randomY = Math.floor(Math.random() * view.size.height);
-        
+
             circleNodes[generationsArray[i][j].id] = new Path.Circle({
                 center: [randomX, randomY],
                 radius: 10,
                 strokeColor: TGStrokeColor,
                 strokeWidth: TGStrokeWidth,
                 opacity: TGOpacity
-            });           
-        
+            });
+
+            circleNodes[generationsArray[i][j].id].velocity = new Point(0, 0);
         }
     }
-    
-    function moveNode(node, depth) {
+
+
+    function rootForce(node, depth) {
         var vec = centerNode.position - node.position;
         //var normVec = vec.normalize(depthDistance * (1 + depth));
         var normVec = vec.normalize();
         var dist = node.position.getDistance(centerNode.position);
         var desiredDistance = depthDistance * (1 + depth);
         var forceSc = dist - desiredDistance;
-        console.log(normVec)
-        node.position += normVec * forceSc/100;
-        /*
-        if (forceSc > 1) {
-            node.position += normVec;
-        } else if (forceSc < 1) {
-            node.position -= normVec;
-        }*/
-    /*
-    function moveNode(node, depth) {
-        var vec = centerNode.position - node.position;
-        //node.position += normPos / 500;
-        //var normVec = normPos.normalize(depthDistance * (1 + depth));
-        var normVec = vec.normalize(depthDistance * (1 + depth));
-//        var ang = node.position.getDirectedAngle(centerNode.position);
-        var desiredDistance = depthDistance * (1 + depth);
-        var dist = node.position.getDistance(centerNode.position);
-        //console.log(Math.floor(dist/100.0 * normVec))
-        var forceSc = dist - desiredDistance;
-        console.log(desiredDistance);
-        force = normVec * forceSc/10000.0;
-        console.log(force);
-        node.position += force;
-        
-        
-        //node.cousinForce();
-        //node.parentForce();*/
-    } 
-    
+        //console.log(node.velocity);
+        node.velocity += normVec * forceSc/100;
+      }
+
+    function cousinForce(node, depth) {}
+    function parentForce(node) {}
+
+  function moveNode(node) {
+        //console.log(node.position);
+        // console.log(node.velocity);
+        node.velocity *= dampness;
+        node.position += node.velocity;
+    }
+
     var lastTime = 0
     function onFrame(event) {
         // Only run every third of a second
-        //if (event.time > lastTime + 1) {
+
+        // if (event.time > lastTime + 0.3) {
             for (var i = 0, len = generationsArray.length; i < len; i++) {
-                
+
                 for (var j = 0, len = generationsArray[i].length; j < len; j++) {
-                    
-                    moveNode(circleNodes[generationsArray[i][j].id], i);     
+                    var node = circleNodes[generationsArray[i][j].id];
+                    rootForce(node, i);
+                    cousinForce(node, i);
+                    parentForce(node);
+                    moveNode(node);
                 }
             }
-        
-      
-        
-        //    lastTime = event.time
+
+
+
+        //    lastTime = event.time;
         //}
 
-    }     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 </head>
 <body>
