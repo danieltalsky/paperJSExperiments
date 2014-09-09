@@ -83,13 +83,14 @@ function traverse(current, depth) {
             opacity: TGOpacity
         });
         // console.log(current.childNodes[i].id)
-        current.childNodes[i].branch = new Path.Line(
-            current.path.position,
-            current.childNodes[i].path.position
-        );
-        current.childNodes[i].branch.strokeColor = TGStrokeColor;
-        current.childNodes[i].branch.strokeWidth = TGStrokeWidth;
-        current.childNodes[i].branch.opacity = TGOpacity;
+        current.childNodes[i].branch = new Path.Line({
+            from: current.path.position,
+            to: current.childNodes[i].path.position, 
+            strokeColor: TGStrokeColor,
+            strokeWidth: TGStrokeWidth,
+            opacity: TGOpacity
+        });
+        
         current.childNodes[i].parent = current;
         current.childNodes[i].velocity = new Point(0, 0);
         generationsArray[depth].push(current.childNodes[i]);
