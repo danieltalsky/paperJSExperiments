@@ -98,18 +98,18 @@ function traverse(current, depth) {
 }
 traverse(nodeTree, 0);
 console.log(generationsArray);
-/*
+
 function rootForce(node, depth) {
-    var vec = centerNode.position - node.position;
+    var vec = nodeTree.path.position - node.path.position;
     var desiredDistance = depthDistance * (1 + depth);
-    if (node.position.getDistance(centerNode.position) < desiredDistance) {
+    if (node.path.position.getDistance(nodeTree.path.position) < desiredDistance) {
     	vec = -vec;
     }
     //console.log(node.velocity);
     node.velocity += vec * 1/1000;
+};
 
-}
-
+/*
 function cousinForce(node, depth) {}
 
 function parentForce(node) {
@@ -118,23 +118,24 @@ function parentForce(node) {
     // var dist = node.position.getDistance(centerNode.position);
     //node.velocity += vec * 1/1000;
 }
+*/
+
 
 function moveNode(node) {
     //console.log(node.position);
     // console.log(node.velocity);
+    node.path.position += node.velocity;
     node.velocity *= dampness;
-    node.position += node.velocity;
-    console.log(node.position);
+    //console.log(node.position);
 }
 
-/*
+
 function onFrame(event) {
     // Only run every third of a second
     //console.log('hm');
     // if (event.time > lastTime + 0.3) {
     for (var i = 0; i < generationsArray.length; i++) {
         for (var j = 0; j <  generationsArray[i].length; j++) {
-            var node = generationsArray[i][j];
             rootForce(generationsArray[i][j], i);
 //            cousinForce(generationsArray[i][j], i);
 //            parentForce(generationsArray[i][j]);
@@ -142,4 +143,3 @@ function onFrame(event) {
         };
     };
 }
-*/
