@@ -30,15 +30,16 @@ for (var i = 0; i < parents.length; i++) {
     if (parents[i] != -1) {
         nodes[i].parent = nodes[parents[i]];
         nodes[i].generation = nodes[i].parent.generation + 1;
-        nodes[i].parentBranch = new Path.Line({
-            from: nodes[i].path.position, 
-            to: nodes[i].parent.path.position,
+        nodes[i].parentBranch = new Path({
+            segments: [nodes[i].path.position, nodes[i].parent.path.position],
             strokeColor: TGStrokeColor,
             strokeWidth: TGStrokeWidth,
-            opacity: TGOpacity});
+            opacity: TGOpacity
+        });
     }
 }
-
+nodes[0].path.strokeColor = "#ff6666";
+nodes[0].m = 100;
 console.log(nodes);
 
 function getForce(n1, n2, k, d, b) {
@@ -83,6 +84,11 @@ function onFrame(event) {
         nodes[j].v += nodes[j].a;
         nodes[j].a *= 0;
         nodes[j].path.position += nodes[j].v;
+        if ("parent" in nodes[j]) {
+            nodes[j].parentBranch.segments = [nodes[j].path.position, nodes[j].parent.path.position];
+        }
+
+
     }
 }       
 
