@@ -87,8 +87,6 @@ function onFrame(event) {
         if ("parent" in nodes[j]) {
             nodes[j].parentBranch.segments = [nodes[j].path.position, nodes[j].parent.path.position];
         }
-
-
     }
 }       
 
