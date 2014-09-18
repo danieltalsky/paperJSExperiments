@@ -3,12 +3,12 @@ var TGOpacity = 0.5;
 var TGStrokeWidth = 3;
 var depthDistance = 80;
 
-var dampness = 0.95; // For dampening, of course.
+var dampness = 0.999; // For dampening, of course.
 var stiffness = 6.0;
 
 var nodes = [];
 var parents = [
-    -1, 0, 0, 0, 3, 4, 5, 4, 2, 9
+    -1, 0, 0, 0, 3, 4, 5, 4, 2, 2
 ];
 
 for (var i = 0; i < parents.length; i++) {
@@ -39,7 +39,7 @@ for (var i = 0; i < parents.length; i++) {
     }
 }
 nodes[0].path.strokeColor = "#ff6666";
-nodes[0].m = 100;
+nodes[0].m = 1000;
 console.log(nodes);
 
 function getForce(n1, n2, k, d, b) {
@@ -51,7 +51,6 @@ function getForce(n1, n2, k, d, b) {
     // |x|: distance between the two points connected to the spring
     // x/|x|: unit length direction vector between the two points: a to b, when applying the force to point a and vice versa.
     // v: relative velocity between the two points connected by the spring
-    // Vector2 F1 = -k * (xAbs - d) * (Vector2.Normalize(node2.p - node1.p) / xAbs) - b * (node1.v - node2.v);
 
     var x = n1.path.position - n2.path.position;
     var xAbs = n1.path.position.getDistance(n2.path.position);
@@ -59,16 +58,10 @@ function getForce(n1, n2, k, d, b) {
     return (x / xAbs) * (-k) * (xAbs - d) - (v * b);
 }
 
-function branchAccel(node, k, d, b) {
-
-    node.a += getForce(node, node.parent, k, d, b)/node.m;
-    node.parent.a += getForce(node.parent, node, k, d, b)/node.parent.m;
+function accel(node1, node2, k, d, b) {
+    node1.a += getForce(node1, node2, k, d, b)/node1.m;
+    node2.a += getForce(node2, node1, k, d, b)/node2.m;
 }
-
-function originAccel(node, k, d, b) {
-    node.a += getForce(node, nodes[0], k, node.generation * d, b)/node.m;
-    nodes[0].a += getForce(nodes[0], node, k, node.generation * d, b)/nodes[0].m;
-}    
 
 function onFrame(event) {
     //console.log(nodes[0].path.position);
@@ -76,8 +69,13 @@ function onFrame(event) {
     //console.log(nodes[0].a); 
     for (var i = 0; i < nodes.length; i++) {
         if ("parent" in nodes[i]) {
-            branchAccel(nodes[i], 1, depthDistance, dampness);
-            // originAccel(nodes[i], 1, depthDistance, dampness);
+            accel(nodes[i], nodes[i].parent, 3, depthDistance, dampness); // parent
+            accel(nodes[i], nodes[0], 6, depthDistance * nodes[i].generation, dampness);  // origin
+            for (var k = i + 1; k < nodes.length; k++) {
+                if (nodes[i].generation == nodes[k].generation) {                
+                    accel(nodes[i], nodes[k], 0.1, 2 * depthDistance * nodes[i].generation, dampness);
+                }
+            }
         }
     }
     for (var j = 0; j < nodes.length; j++) {
