@@ -1,68 +1,62 @@
 var TGStrokeColor = '#98c8eb';
 var TGOpacity = 0.5;
 var TGStrokeWidth = 3;
-var depthDistance = 80;
+var depthDistance = 30;
 
 var dampness = 0.999; // For dampening, of course.
 
 var nodes = [];
-var parents = [-1, 0, 0, 0, 1, 3, 3, 2, 2, 4, 4, 4, 
-               11, 11, 12, 12, 12, 13, 14, 14, 14, 
-               15, 15, 15, 15, 28, 28, 28, 17, 17, 
-               17, 17, 18, 18, 18, 22, 22, 23, 23, 
-               24, 24, 24, 25, 25, 26, 26, 27, 31, 
-               31, 30, 30, 29, 33, 33, 37, 43, 43, 
-               43, 49, 49, 49, 52, 52, 52, 26, 13, 
-               70, 74, 74, 74, 75, 32, 32, 40, 40, 
-               40, 70, 70, 82, 82, 82, 83, 84, 84, 
-               76, 56, 56, 19, 35, 19, 83, 45, 35, 
-               35, 45, 45, 8, 8, 8, 9, 9, 9, 130, 
-               130, 130, 19, 36, 46, 20, 20, 99, 99, 
-               101, 20, 92, 63, 46, 73, 5, 115, 92, 
-               126, 29, 120, 5, 51, 79, 54, 111, 131, 
-               111, 120, 111, 160, 129, 131, 72, 93, 
-               135, 160, 129, 114, 90, 140, 146, 135, 
-               115, 73, 108, 44, 51, 145, 135, 134, 
-               131, 138, 135, 160, 134, 133, 81, 34, 
-               90, 174, 114, 146, 81, 34, 181, 174, 
-               73, 48, 151, 129, 146, 167, 154, 114, 
-               145, 141, 201, 171, 201, 133, 148, 174, 
-               169, 137, 80, 188, 38, 207, 188, 137, 
-               139, 170, 194, 57, 65, 206, 167, 154, 
-               112, 138, 169, 116, 139, 37, 58, 58, 
-               112, 216, 89, 235, 219, 89, 225, 183, 
-               259, 148, 246, 151, 183, 252, 257, 154, 
-               246, 230, 253, 257, 219, 213, 253, 113, 
-               203, 230, 247, 170, 286, 95, 213, 65, 
-               158, 158, 247, 234, 267, 239, 36, 259, 
-               274, 263, 263, 68, 79, 267, 102, 63, 
-               102, 268, 198, 47, 30, 27, 216, 109, 
-               296, 268, 234, 153, 140, 237, 276, 332, 
-               75, 225, 47, 186, 294, 58, 263, 27, 83, 
-               36, 57, 289, 188, 261, 116, 115, 299, 
-               195, 196, 173, 289, 271, 195, 212, 83, 
-               286, 109, 289, 284, 336, 351, 171, 294, 
-               182, 182, 306, 371, 371, 196, 344, 46, 228];
+var parents = [-1, 0, 0, 0, 1, 3, 3, 2, 2, 4, 4, 4, 9, 9, 10, 10, 
+               10, 11, 12, 12, 12, 13, 13, 13, 13, 24, 24, 24, 14, 
+               14, 14, 14, 15, 15, 15, 18, 18, 19, 19, 20, 20, 20, 
+               21, 21, 22, 22, 23, 27, 27, 26, 26, 25, 29, 29, 33, 
+               37, 37, 37, 43, 43, 43, 45, 45, 45, 22, 11, 55, 59, 
+               59, 59, 60, 28, 28, 36, 36, 36, 55, 55, 67, 67, 67, 
+               68, 69, 69, 61, 47, 47, 16, 31, 16, 68, 39, 31, 31, 
+               39, 39, 7, 7, 7, 8, 8, 8, 97, 97, 97, 16, 32, 40,
+               17, 17, 80, 80, 82, 17, 73, 51, 40, 58, 5, 91, 73, 
+               95, 25, 94, 5, 44, 64, 46, 87, 98, 87, 94, 87, 118, 
+               96, 98, 57, 74, 101, 118, 96, 90, 72, 105, 109, 101, 
+               91, 58, 85, 38, 44, 108, 101, 100, 98, 103, 101, 
+               118, 100, 99, 66, 30, 72, 129, 90, 109, 66, 30, 135, 
+               129, 58, 42, 112, 96, 109, 122, 114, 90, 108, 106, 
+               151, 126, 151, 99, 111, 129, 124, 102, 65, 142, 34, 
+               157, 142, 102, 104, 125, 145, 48, 52, 156, 122, 114, 
+               88, 103, 124, 92, 104, 33, 49, 49, 88, 163, 71, 177, 
+               166, 71, 170, 137, 194, 111, 185, 112, 137, 188, 
+               192, 114, 185, 174, 189, 192, 166, 162, 189, 89, 
+               153, 174, 186, 125, 213, 76, 162, 52, 116, 116, 186, 
+               176, 200, 180, 32, 194, 206, 197, 197, 54, 64, 200, 
+               83, 51, 83, 201, 149, 41, 26, 23, 163, 86, 222, 201, 
+               176, 113, 105, 178, 207, 252, 60, 170, 41, 140, 220, 
+               49, 197, 23, 68, 32, 48, 216, 142, 196, 92, 91, 225, 
+               146, 147, 128, 216, 204, 146, 161, 68, 213, 86, 216, 
+               212, 256, 267, 126, 220, 136, 136, 232, 279, 279, 
+               147, 261, 40, 172];
 
-for (var i = 0; i < parents.length; i++) {
+
+function addNode(pt) {
+    var parentID = parents.shift();
+    console.log(parentID);
+    var i = nodes.length;
     nodes.push({
         path: new Path.Circle({
-            center: new Point(Math.random() * view.size.width,
-                              Math.random() * view.size.height),
+            center: pt,
             radius: 10,
             strokeColor: TGStrokeColor,
             strokeWidth: TGStrokeWidth,
             opacity: TGOpacity}),
         m: 10,
-        v: new Point(0.0, 0.0),
+        v: new Point.random() * 0.1,
         a: new Point(0.0, 0.0),
-    });
-    if (parents[i] == -1) {
+    }); 
+    if (parentID == -1) {
         nodes[i].generation = 0;
+        nodes[i].path.strokeColor = "#330000";
+        nodes[i].m = 1000;
     }
-    if (parents[i] != -1) {
-        nodes[i].parent = nodes[parents[i]];
-        console.log(nodes[i]);
+    if (parentID != -1) {
+        nodes[i].parent = nodes[parentID];
         nodes[i].generation = nodes[i].parent.generation + 1;
         nodes[i].parentBranch = new Path({
             segments: [nodes[i].path.position, nodes[i].parent.path.position],
@@ -70,13 +64,11 @@ for (var i = 0; i < parents.length; i++) {
             strokeWidth: TGStrokeWidth,
             opacity: TGOpacity
         });
-    }
+    };
+    //console.log(nodes[i]);
 }
-nodes[0].path.strokeColor = "#ff6666";
-nodes[0].m = 1000;
-console.log(nodes);
 
-function getForce(n1, n2, k, d, b) {
+function forceSpring(n1, n2, k, d, b) {
     // F = -k(|x|-d)(x/|x|) - bv
     // k: spring tightness coeff
     // d: desired distance of separation
@@ -92,31 +84,43 @@ function getForce(n1, n2, k, d, b) {
     return (x / xAbs) * (-k) * (xAbs - d) - (v * b);
 }
 
-function accel(node1, node2, k, d, b) {
-    node1.a += getForce(node1, node2, k, d, b)/node1.m;
-    node2.a += getForce(node2, node1, k, d, b)/node2.m;
+function forceGrav(n1, n2) {
+    // F = m1 * m2 / d^2
+}
+    
+function accelSpring(node1, node2, k, d, b) {
+    node1.a += forceSpring(node1, node2, k, d, b)/node1.m;
+    node2.a += forceSpring(node2, node1, k, d, b)/node2.m;
+}
+
+function onMouseDown(event) {
+    addNode(event.point);
 }
 
 function onFrame(event) {
     //console.log(nodes[0].path.position);
     //console.log(nodes[0].v);
-    //console.log(nodes[0].a); 
+    //console.log(nodes[0].a);
+    
+    // Accelerate all the nodes
     for (var i = 0; i < nodes.length; i++) {
         if ("parent" in nodes[i]) {
-            accel(nodes[i], nodes[i].parent, 3, depthDistance, dampness); // parent
-            accel(nodes[i], nodes[0], 6, depthDistance * nodes[i].generation, dampness);  // origin
+            accelSpring(nodes[i], nodes[i].parent, 0.1, depthDistance, dampness); // parent
+            accelSpring(nodes[i], nodes[0], 6, depthDistance * nodes[i].generation, dampness);  // origin
             for (var k = i + 1; k < nodes.length; k++) {
                 if (nodes[i].generation == nodes[k].generation) {                
-                    accel(nodes[i], nodes[k], 0.1, 2 * depthDistance * nodes[i].generation, dampness);
+                    accelSpring(nodes[i], nodes[k], 0.1, depthDistance * nodes[i].generation, dampness);  // cousin
                 }
             }
         }
     }
+    
+    // Move all the nodes
     for (var j = 0; j < nodes.length; j++) {
         nodes[j].v += nodes[j].a;
         nodes[j].a *= 0;
         nodes[j].path.position += nodes[j].v;
-        if ("parent" in nodes[j]) {
+        if ("parent" in nodes[j]) { // ...and the branches
             nodes[j].parentBranch.segments = [nodes[j].path.position, nodes[j].parent.path.position];
         }
     }
