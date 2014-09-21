@@ -1,7 +1,9 @@
 var TGStrokeColor = '#98c8eb';
 var TGOpacity = 0.5;
 var TGStrokeWidth = 3;
-var depthDistance = 30;
+nodeSize = 10;
+var depthDistance = 50;
+var gravConst = 15.0;
 
 var dampness = 0.999; // For dampening, of course.
 
@@ -35,36 +37,47 @@ var parents = [-1, 0, 0, 0, 1, 3, 3, 2, 2, 4, 4, 4, 9, 9, 10, 10,
                147, 261, 40, 172];
 
 
-function addNode(pt) {
+function addOriginNode() {
     var parentID = parents.shift();
-    console.log(parentID);
-    var i = nodes.length;
     nodes.push({
-        path: new Path.Circle({
-            center: pt,
-            radius: 10,
+        path: new Path.Circle({  
+            center: view.size / 2,
+            radius: nodeSize,
+            strokeColor: "#330000",
+            strokeWidth: TGStrokeWidth,
+            opacity: TGOpacity}),
+        m: 100,
+        v: new Point(0,0),
+        a: new Point(0.0, 0.0),
+        generation: 0        
+    }); 
+}
+    
+function addNode() {
+    var parentID = parents.shift();
+    console.log('Parent: ' + parentID);
+    var i = nodes.length;
+    var spawnvec = nodes[parentID].path.position - nodes[parentID].parent.path.position + (Point.random() * 2 - 1);
+    spawnvec.length = depthDistance / 2;
+    nodes.push({
+        parent: nodes[parentID],
+        generation: nodes[parentID].generation + 1,
+        path: new Path.Circle({  // Spawn near parent's position
+            center: nodes[parentID].path.position + spawnvec,
+            radius: nodeSize,
             strokeColor: TGStrokeColor,
             strokeWidth: TGStrokeWidth,
             opacity: TGOpacity}),
         m: 10,
-        v: new Point.random() * 0.1,
+        v: new Point(0,0),
         a: new Point(0.0, 0.0),
     }); 
-    if (parentID == -1) {
-        nodes[i].generation = 0;
-        nodes[i].path.strokeColor = "#330000";
-        nodes[i].m = 1000;
-    }
-    if (parentID != -1) {
-        nodes[i].parent = nodes[parentID];
-        nodes[i].generation = nodes[i].parent.generation + 1;
-        nodes[i].parentBranch = new Path({
-            segments: [nodes[i].path.position, nodes[i].parent.path.position],
-            strokeColor: TGStrokeColor,
-            strokeWidth: TGStrokeWidth,
-            opacity: TGOpacity
-        });
-    };
+    nodes[i].parentBranch = new Path({
+        segments: [nodes[i].path.position, nodes[i].parent.path.position],
+        strokeColor: TGStrokeColor,
+        strokeWidth: TGStrokeWidth,
+        opacity: TGOpacity
+    });
     //console.log(nodes[i]);
 }
 
@@ -84,18 +97,33 @@ function forceSpring(n1, n2, k, d, b) {
     return (x / xAbs) * (-k) * (xAbs - d) - (v * b);
 }
 
+    
+function accelSpring(n1, n2, k, d, b) {
+    n1.a += forceSpring(n1, n2, k, d, b)/n1.m;
+    n2.a += forceSpring(n2, n1, k, d, b)/n2.m;
+}
+
 function forceGrav(n1, n2) {
     // F = m1 * m2 / d^2
+    // var ang = n1.path.position.getDirectedAngle(n2.path.position);  // WTFFFFF
+    var diff = (n1.path.position - n2.path.position).normalize();
+    var force = n1.m * n2.m / n1.path.position.getDistance(n2.path.position, true);
+    return diff * force; 
 }
-    
-function accelSpring(node1, node2, k, d, b) {
-    node1.a += forceSpring(node1, node2, k, d, b)/node1.m;
-    node2.a += forceSpring(node2, node1, k, d, b)/node2.m;
+
+function accelGrav(n1, n2) {
+    if (n1.path.position.isClose(n2.path.position, nodeSize * 4)) {
+        // These are computationally expensive so only do it to nodes that are close
+        n1.a += forceGrav(n1, n2) * gravConst / n1.m;
+        n2.a += forceGrav(n2, n1) * gravConst / n2.m;
+    }
 }
 
 function onMouseDown(event) {
-    addNode(event.point);
+    addNode();
 }
+
+addOriginNode(); // Start with origin
 
 function onFrame(event) {
     //console.log(nodes[0].path.position);
@@ -105,13 +133,11 @@ function onFrame(event) {
     // Accelerate all the nodes
     for (var i = 0; i < nodes.length; i++) {
         if ("parent" in nodes[i]) {
-            accelSpring(nodes[i], nodes[i].parent, 0.1, depthDistance, dampness); // parent
+            accelSpring(nodes[i], nodes[i].parent, 0.5, depthDistance, dampness); // parent
             accelSpring(nodes[i], nodes[0], 6, depthDistance * nodes[i].generation, dampness);  // origin
-            for (var k = i + 1; k < nodes.length; k++) {
-                if (nodes[i].generation == nodes[k].generation) {                
-                    accelSpring(nodes[i], nodes[k], 0.1, depthDistance * nodes[i].generation, dampness);  // cousin
-                }
-            }
+        }
+        for (var k = i + 1; k < nodes.length; k++) {  // space 'em out
+            accelGrav(nodes[i], nodes[k]);
         }
     }
     
